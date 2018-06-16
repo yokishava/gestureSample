@@ -10,91 +10,95 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    // 画像の拡大率
-    private var currentScale:CGFloat = 1.0
-    private var maxScale: CGFloat!
-    private var scaleArray: [CGFloat] = []
-    private var specifiedMaxScale = false
+    private var lockMode: Bool = false
     
-    //var imageView: UIImageView!
-    var imageView: RenderImageView!
+    var childView: RenderView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let image = UIImage(named: "wallpaper358.jpg")
-        imageView = RenderImageView(image: image)
-        self.view.addSubview(imageView)
-//        imageView = UIImageView(image: image)
-//        //imageView.image = UIImage(named: "wallpaper358.jpg")
-//        //imageView.contentMode = .scaleAspectFit
-//        imageView.frame.origin.x = 70
-//        imageView.frame.origin.y = 200
-//        imageView.frame.size = CGSize(width: 200, height: 200)
-//        print(imageView.frame.maxX)
-//        print(imageView.frame.maxY)
-//        self.view.addSubview(imageView)
-//        
-//        imageView.isUserInteractionEnabled = true
+        let view = RenderView()
+        self.view.addSubview(view)
         
-        // imageViewにジェスチャーレコグナイザを設定する(ピンチ)
-        //let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchAction(sender:)))
-        //imageView.addGestureRecognizer(pinchGesture)
-        // Do any additional setup after loading the view, typically from a nib.
+        let button = UIButton()
+        button.backgroundColor = UIColor.black
+        button.layer.cornerRadius = 10
+        button.setTitle("ロック変更", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(button)
+        
+        button.addTarget(self, action: #selector(tappedButton), for: .touchUpInside)
+
+        button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -50).isActive = true
     }
     
-    @objc func pinchAction(sender: UIPinchGestureRecognizer) {
-        // imageViewを拡大縮小する
-        // ピンチ中の拡大率は0.3〜2.5倍、指を離した時の拡大率は0.5〜2.0倍とする
-        switch sender.state {
-        case .began, .changed:
-            // senderのscaleは、指を動かしていない状態が1.0となる
-            // 現在の拡大率に、(scaleから1を引いたもの) / 10(補正率)を加算する
-            currentScale = currentScale + (sender.scale - 1) / 10
-            // 拡大率が基準から外れる場合は、補正する
-            if currentScale < 0.3 {
-                currentScale = 0.3
-            } else if currentScale > 2.5 {
-                currentScale = 2.5
-            }
-            
-            // 計算後の拡大率で、imageViewを拡大縮小する
-            imageView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
-            
-            scaleArray.append(currentScale)
-            
-            print("***************************************")
-            print(currentScale)
-            print(imageView.frame.origin.x)
-            print(imageView.frame.maxX)
-            //print(imageView.frame.maxY)
-            //print(imageView.frame.origin.y)
-            print("***************************************")
-            
-            //
-            if imageView.frame.origin.x < 0 || imageView.frame.origin.y < 0 || imageView.frame.maxX > UIScreen.main.bounds.width || imageView.frame.maxY > UIScreen.main.bounds.height {
-
-                if !specifiedMaxScale {
-                    // -1にすべきか-2にすべきか。。。
-                    maxScale = scaleArray[self.scaleArray.count - 1]
-                    specifiedMaxScale = true
-                }
-                
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                print(maxScale)
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                
-                imageView.transform = CGAffineTransform(scaleX: maxScale, y: maxScale)
-
-            }
-        default:
-            if currentScale < 0.5 {
-                UIView.animate(withDuration: 0.2, animations: {
-                    self.imageView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-                }, completion: nil)
-            }
-            
-            //scaleArray.removeAll()
+    //初期表示時上から順に呼び出される
+    //LayoutSubviewsがorientaionを変更した時に呼び出される
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("viewWillAppear")
+        print(self.view.frame.width)
+        print(self.view.frame.height)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        print("viewWillLayoutSubview")
+        print(self.view.frame.width)
+        print(self.view.frame.height)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        print("viewDidLayoutSubviews")
+        print(self.view.frame.width)
+        print(self.view.frame.height)
+        //RenderViewにorientaitionが変更したことを通知
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateOrientation"), object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("viewDidAppear")
+        print(self.view.frame.width)
+        print(self.view.frame.height)
+    }
+    
+    override var shouldAutorotate: Bool {
+        return lockMode
+    }
+    
+    /*
+     shouldAutorotateがfalseの状態で
+     portraitからlandscapeに変更
+     この時、
+     ・上のメソッドは呼び出されない
+     ・viewのwidthとheightも入れ替わらない
+     
+     shouldAutorotateがfalseの状態で
+     portraitからlandscapeに変更
+     変更後、sholdAutorotateをtrueにする
+     この時
+     ・上のメソッドは呼び出されない
+     ・viewのwidthとheightも入れ替わらない
+     */
+    
+    @objc func tappedButton() {
+        if lockMode {
+            lockMode = false
+            print(lockMode)
+        } else {
+            lockMode = true
+            print(lockMode)
         }
+        print(self.view.frame.width)
+        print(self.view.frame.height)
     }
 
     override func didReceiveMemoryWarning() {

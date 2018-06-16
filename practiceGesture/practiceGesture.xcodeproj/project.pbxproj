@@ -14,8 +14,8 @@
 		593AB01720A69C1D00EC4A02 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 593AB01520A69C1D00EC4A02 /* LaunchScreen.storyboard */; };
 		593AB02220A69C1D00EC4A02 /* practiceGestureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593AB02120A69C1D00EC4A02 /* practiceGestureTests.swift */; };
 		593AB02D20A69C1E00EC4A02 /* practiceGestureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593AB02C20A69C1E00EC4A02 /* practiceGestureUITests.swift */; };
-		593AB03B20A69CDF00EC4A02 /* wallpaper358.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 593AB03A20A69CDF00EC4A02 /* wallpaper358.jpg */; };
 		593AB03D20A6BA1300EC4A02 /* RenderImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593AB03C20A6BA1300EC4A02 /* RenderImageView.swift */; };
+		596D051520D4CC0F006CA88A /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596D051420D4CC0F006CA88A /* RenderView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +49,8 @@
 		593AB02820A69C1D00EC4A02 /* practiceGestureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = practiceGestureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		593AB02C20A69C1E00EC4A02 /* practiceGestureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = practiceGestureUITests.swift; sourceTree = "<group>"; };
 		593AB02E20A69C1E00EC4A02 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		593AB03A20A69CDF00EC4A02 /* wallpaper358.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wallpaper358.jpg; sourceTree = "<group>"; };
 		593AB03C20A6BA1300EC4A02 /* RenderImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImageView.swift; sourceTree = "<group>"; };
+		596D051420D4CC0F006CA88A /* RenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,10 +104,10 @@
 				593AB00C20A69C1C00EC4A02 /* AppDelegate.swift */,
 				593AB00E20A69C1C00EC4A02 /* ViewController.swift */,
 				593AB03C20A6BA1300EC4A02 /* RenderImageView.swift */,
+				596D051420D4CC0F006CA88A /* RenderView.swift */,
 				593AB01020A69C1C00EC4A02 /* Main.storyboard */,
 				593AB01320A69C1D00EC4A02 /* Assets.xcassets */,
 				593AB01520A69C1D00EC4A02 /* LaunchScreen.storyboard */,
-				593AB03A20A69CDF00EC4A02 /* wallpaper358.jpg */,
 				593AB01820A69C1D00EC4A02 /* Info.plist */,
 			);
 			path = practiceGesture;
@@ -238,7 +238,6 @@
 				593AB01720A69C1D00EC4A02 /* LaunchScreen.storyboard in Resources */,
 				593AB01420A69C1D00EC4A02 /* Assets.xcassets in Resources */,
 				593AB01220A69C1C00EC4A02 /* Main.storyboard in Resources */,
-				593AB03B20A69CDF00EC4A02 /* wallpaper358.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +264,7 @@
 			files = (
 				593AB03D20A6BA1300EC4A02 /* RenderImageView.swift in Sources */,
 				593AB00F20A69C1C00EC4A02 /* ViewController.swift in Sources */,
+				596D051520D4CC0F006CA88A /* RenderView.swift in Sources */,
 				593AB00D20A69C1C00EC4A02 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -441,7 +441,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LC262FF5YU;
 				INFOPLIST_FILE = practiceGesture/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -460,7 +460,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LC262FF5YU;
 				INFOPLIST_FILE = practiceGesture/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

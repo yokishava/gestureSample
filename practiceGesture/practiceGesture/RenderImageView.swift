@@ -67,6 +67,7 @@ class RenderImageView: UIImageView {
                 scaleArray.append(currentScale)
                 
                 //拡大していって画面の境界を超えた時、超える直前のcurrentScaleを使用する
+                
                 if self.frame.origin.x < 0 || self.frame.origin.y < 0 || self.frame.maxX > UIScreen.main.bounds.width || self.frame.maxY > UIScreen.main.bounds.height {
                     
                     if !specifiedMaxScale {
@@ -115,7 +116,20 @@ class RenderImageView: UIImageView {
 //            if behaviorMode == .ChangeWindowSize {
 //                frame = CGRect(origin: frame.origin, size: CGSize(width: location.x, height: location.y ))
 //            }else{
+            print("########## dx, dy ###########")
+            print(location.x - locationInitialTouch.x)
+            print(location.y - locationInitialTouch.y)
+            
+            print("@@@@@@@@@ previous origin @@@@@@@@@@")
+            print(frame.origin.x)
+            print(frame.origin.y)
+            
             frame = frame.offsetBy(dx: location.x - locationInitialTouch.x, dy: location.y - locationInitialTouch.y)
+            
+            print("******** after origin **********")
+            print(frame.origin.x)
+            print(frame.origin.y)
+            
             if frame.origin.x < 0 {
                 frame.origin.x = 0
             }
