@@ -28,6 +28,9 @@ class RenderView: UIView {
         self.backgroundColor = UIColor.blue
         //ViewConrollerからorientationが変更した時に通知を受け取る
         NotificationCenter.default.addObserver(self, selector: #selector(judgeViewFrame), name: NSNotification.Name("updateOrientation"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(judgeLandscapeViewFrame), name: NSNotification.Name(rawValue: "landscape"), object: nil)
+        
         //拡大、縮小用のrecognizerを追加
         let pinchGesuture = UIPinchGestureRecognizer(target: self, action: #selector(pinchAction(_:)))
         self.addGestureRecognizer(pinchGesuture)
@@ -39,9 +42,6 @@ class RenderView: UIView {
     
     @objc
     private func pinchAction(_ sender: UIPinchGestureRecognizer) {
-        //アクション中にどんどん更新されるscaleを保持するための配列
-        var scaleArray: [CGFloat] = []
-        
         switch sender.state {
         case .began:
             break
@@ -57,37 +57,7 @@ class RenderView: UIView {
                 currentScale = 2.5
             }
             
-            //拡大、縮小を適用する前に画面の境界に位置していないか確認する
-            //境界に位置していた場合は、処理を終える
-            guard self.frame.origin.x != 0 else {
-                return
-            }
-            guard self.frame.origin.y != 0 else {
-                return
-            }
-            guard self.frame.maxX != UIScreen.main.bounds.width else {
-                return
-            }
-            guard self.frame.maxY != UIScreen.main.bounds.height else {
-                return
-            }
-            
-            //拡大、縮小
-            self.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
-            //適用していくscaleを配列で保持していく
-            scaleArray.append(currentScale)
-            
-            //拡大、縮小して画面からはみ出ていないか確認する
-            //はみ出ていなければ、処理を終える
-            if self.frame.origin.x < 0 || self.frame.origin.y < 0 || self.frame.maxX > UIScreen.main.bounds.width || self.frame.maxY > UIScreen.main.bounds.height {
-                //拡大、縮小してはみ出してしまった場合
-                if maxScale == nil {
-                   //はみ出る直前のscaleを取得
-                   maxScale = scaleArray[scaleArray.count - 1]
-                }
-                //はみ出ないようにサイズを更新
-                self.transform = CGAffineTransform(scaleX: maxScale, y: maxScale)
-            }
+            setJudgeTransform()
             
         default:
             if currentScale < 0.5 {
@@ -121,7 +91,7 @@ class RenderView: UIView {
             let location = touch.location(in: self)
             //移動量を計算し、自身のviewの座標を更新する
             frame = frame.offsetBy(dx: location.x - locationIntialTouch.x, dy: location.y - locationIntialTouch.y)
-            judgeViewFrame()
+            setJudgeFrame()
         }
     }
     
@@ -130,6 +100,14 @@ class RenderView: UIView {
             let location = touch.location(in: self)
             //移動量を計算し、自身のviewの座標を更新する
             frame = frame.offsetBy(dx: location.x - locationIntialTouch.x, dy: location.y - locationIntialTouch.y)
+            setJudgeFrame()
+        }
+    }
+    
+    private func setJudgeFrame() {
+        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+            judgeLandscapeViewFrame()
+        } else {
             judgeViewFrame()
         }
     }
@@ -147,8 +125,105 @@ class RenderView: UIView {
         if frame.maxX > UIScreen.main.bounds.width {
             frame.origin.x = UIScreen.main.bounds.width - frame.width
         }
+        if frame.maxY > UIScreen.main.bounds.height * 3/4 {
+            frame.origin.y = UIScreen.main.bounds.height * 3/4 - frame.height
+        }
+    }
+    
+    @objc
+    private func judgeLandscapeViewFrame() {
+        //はみ出していないか判定する
+        if frame.origin.x < 0 {
+            frame.origin.x = 0
+        }
+        if frame.origin.y < 0 {
+            frame.origin.y = 0
+        }
+        if frame.maxX > UIScreen.main.bounds.width * 3/4 {
+            frame.origin.x = UIScreen.main.bounds.width * 3/4 - frame.width
+        }
         if frame.maxY > UIScreen.main.bounds.height {
             frame.origin.y = UIScreen.main.bounds.height - frame.height
+        }
+    }
+    
+    private func setJudgeTransform() {
+        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+            judgeTransformWhenLandscape()
+        } else {
+            judgeTransformWhenPortrait()
+        }
+    }
+    
+    private func judgeTransformWhenPortrait() {
+        //アクション中にどんどん更新されるscaleを保持するための配列
+        var scaleArray: [CGFloat] = []
+        //拡大、縮小を適用する前に画面の境界に位置していないか確認する
+        //境界に位置していた場合は、処理を終える
+        guard self.frame.origin.x != 0 else {
+            return
+        }
+        guard self.frame.origin.y != 0 else {
+            return
+        }
+        guard self.frame.maxX != UIScreen.main.bounds.width else {
+            return
+        }
+        guard self.frame.maxY != UIScreen.main.bounds.height * 3/4 else {
+            return
+        }
+        
+        //拡大、縮小
+        self.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+        //適用していくscaleを配列で保持していく
+        scaleArray.append(currentScale)
+        
+        //拡大、縮小して画面からはみ出ていないか確認する
+        //はみ出ていなければ、処理を終える
+        if self.frame.origin.x < 0 || self.frame.origin.y < 0 || self.frame.maxX > UIScreen.main.bounds.width || self.frame.maxY > UIScreen.main.bounds.height * 3/4 {
+            //拡大、縮小してはみ出してしまった場合
+            if maxScale == nil {
+                //はみ出る直前のscaleを取得
+                maxScale = scaleArray[scaleArray.count - 1]
+            }
+            //はみ出ないようにサイズを更新
+            self.transform = CGAffineTransform(scaleX: maxScale, y: maxScale)
+        }
+    }
+    
+    private func judgeTransformWhenLandscape() {
+        //アクション中にどんどん更新されるscaleを保持するための配列
+        var scaleArray: [CGFloat] = []
+        //拡大、縮小を適用する前に画面の境界に位置していないか確認する
+        //境界に位置していた場合は、処理を終える
+        guard self.frame.origin.x != 0 else {
+            return
+        }
+        guard self.frame.origin.y != 0 else {
+            return
+        }
+        guard self.frame.maxX != UIScreen.main.bounds.width * 3/4 else {
+            return
+        }
+        guard self.frame.maxY != UIScreen.main.bounds.height else {
+            return
+        }
+        
+        //拡大、縮小
+        self.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+        //適用していくscaleを配列で保持していく
+        scaleArray.append(currentScale)
+        
+        //拡大、縮小して画面からはみ出ていないか確認する
+        //はみ出ていなければ、処理を終える
+        if self.frame.origin.x < 0 || self.frame.origin.y < 0 || self.frame.maxX > UIScreen.main.bounds.width * 3/4 || self.frame.maxY > UIScreen.main.bounds.height {
+            //拡大、縮小してはみ出してしまった場合
+            if maxScale == nil {
+                //はみ出る直前のscaleを取得
+                maxScale = scaleArray[scaleArray.count - 1]
+            }
+            //はみ出ないようにサイズを更新
+            self.transform = CGAffineTransform(scaleX: maxScale, y: maxScale)
         }
     }
     
