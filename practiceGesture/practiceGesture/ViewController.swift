@@ -60,7 +60,7 @@ class ViewController: UIViewController {
         print(self.view.frame.width)
         print(self.view.frame.height)
         //RenderViewにorientaitionが変更したことを通知
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateOrientation"), object: nil)
+        currentFrameNotification()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -99,6 +99,14 @@ class ViewController: UIViewController {
         }
         print(self.view.frame.width)
         print(self.view.frame.height)
+    }
+    
+    private func currentFrameNotification() {
+        if self.view.frame.width > self.view.frame.height {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateOrientation"), object: nil)
+        } else {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "landscape"), object: nil)
+        }
     }
 
     override func didReceiveMemoryWarning() {
